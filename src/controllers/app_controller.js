@@ -55,16 +55,6 @@ export default class extends Controller {
     return 512;
   }
 
-  createGeometry() {
-    this.renderables = allParticles.map(particle => {
-      switch (particle.charge) {
-        case 0: return new PhotonLine(particle);
-        case +1: return new PositronLine(particle);
-        case -1: return new ElectronLine(particle);
-      }
-    });
-  }
-
   generate() {
     // set anchor points of inputs and outputs (on-shell particles)
     incomingVertices.forEach((v, index) => {
@@ -81,12 +71,23 @@ export default class extends Controller {
       v._displayPoint = [Math.random(), Math.random()];
     });
 
-    this.createGeometry();
-    this.render();
+    this.processAndRender();
   }
 
-  reprocess() {
-    innerVertices.forEach(processVertex);
+  createGeometry() {
+    this.renderables = allParticles.map(particle => {
+      switch (particle.charge) {
+        case 0: return new PhotonLine(particle);
+        case +1: return new PositronLine(particle);
+        case -1: return new ElectronLine(particle);
+      }
+    });
+  }
+
+  processAndRender() {
+    for (let i = 0; i < 20; i++ ) {
+      innerVertices.forEach(processVertex);
+    }
 
     this.createGeometry();
     this.render();
