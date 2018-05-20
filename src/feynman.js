@@ -64,3 +64,20 @@ export class OriginVertex extends Vertex {
     this.origin = true;
   }
 }
+
+export class Diagram {
+  constructor(inputs, outputs, virtuals, vertices) {
+    this.inputs   = inputs;
+    this.outputs  = outputs;
+    this.virtuals = virtuals;
+    this.vertices = vertices;
+
+    this.incomingVertices = this.inputs.map(p => new OriginVertex(p));
+    this.outgoingVertices = this.outputs.map(p => new OriginVertex(p));
+
+    this.originVertices   = [...this.incomingVertices, ...this.outgoingVertices];
+
+    this.allParticles     = [...this.inputs, ...this.outputs, ...this.virtuals];
+    this.allVertices      = [...this.originVertices, ...this.vertices];
+  }
+}

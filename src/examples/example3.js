@@ -1,4 +1,4 @@
-import { Electron, Positron, Photon, Vertex, OriginVertex } from '../feynman';
+import { Electron, Positron, Photon, Vertex, Diagram } from '../feynman';
 
 const e1 = new Electron();
 const e2 = new Electron();
@@ -22,12 +22,6 @@ const v6 = new Vertex(pv2, gv3, p2);
 export const inputs = [e1, p1];
 export const outputs = [e2, p2];
 export const virtuals = [ev1, ev2, pv1, pv2, gv1, gv2, gv3];
+export const vertices = [v1, v2, v3, v4, v5, v6];
 
-export const incomingVertices = inputs.map(p => new OriginVertex(p));
-export const outgoingVertices = outputs.map(p => new OriginVertex(p));
-export const innerVertices = [v1, v2, v3, v4, v5, v6];
-
-export const originVertices = [...incomingVertices, ...outgoingVertices];
-
-export const allParticles = [...inputs, ...outputs, ...virtuals];
-export const allVertices = [...originVertices, ...innerVertices];
+export default new Diagram(inputs, outputs, virtuals, vertices);
