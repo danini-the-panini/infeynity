@@ -1,5 +1,5 @@
 import { Controller } from "stimulus"
-import { inputs, outputs, virtuals, incomingVertices, outgoingVertices, originVertices, innerVertices, allParticles, allVertices } from '../examples/example1';
+import { inputs, outputs, virtuals, incomingVertices, outgoingVertices, originVertices, innerVertices, allParticles, allVertices } from '../examples/example2';
 import { Line, SquigglyLine, goingUp, goingDown } from '../geometry';
 
 function processVertex(vertex) {
