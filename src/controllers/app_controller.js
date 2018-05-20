@@ -5,6 +5,7 @@ import diagram1 from '../examples/example1';
 import diagram2 from '../examples/example2';
 import diagram3 from '../examples/example3';
 import diagram4 from '../examples/example4';
+import diagram5 from '../examples/example5';
 
 function centroidifyVertex(vertex) {
   const neighbours = vertex.getNeighbours();
@@ -88,6 +89,7 @@ export default class extends Controller {
   generate2() { this.generate(diagram2); }
   generate3() { this.generate(diagram3); }
   generate4() { this.generate(diagram4); }
+  generate5() { this.generate(diagram5); }
 
   generate(diagram = this.diagram) {
     this.diagram = diagram;
