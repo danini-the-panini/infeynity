@@ -62,6 +62,18 @@ function avg(a) {
   return a.reduce((x, y) => x + y) / a.length;
 }
 
+export function goingUp(a, b) {
+  const [x1, y1] = a;
+  const [x2, y2] = b;
+
+  return y1 < y2 ? [a, b] : [b, a];
+}
+
+export function goingDown(a, b) {
+  const [low, high] = goingUp(a, b);
+  return [high, low];
+}
+
 export class Line {
   constructor(start, end, label = '-') {
     this.start = start;

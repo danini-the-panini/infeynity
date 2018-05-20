@@ -1,6 +1,6 @@
 import { Controller } from "stimulus"
 import { inputs, outputs, virtuals, incomingVertices, outgoingVertices, originVertices, innerVertices, allParticles, allVertices } from '../feynman';
-import { Line, SquigglyLine } from '../geometry';
+import { Line, SquigglyLine, goingUp, goingDown } from '../geometry';
 
 function processVertex(vertex) {
   const neighbours = vertex.neighbours;
@@ -15,6 +15,28 @@ function processVertex(vertex) {
   y /= neighbours.length;
 
   vertex._displayPoint = [x, y];
+}
+
+function linePoints(particle) {
+  return particle.vertices.map(v => v._displayPoint);
+}
+
+class PhotonLine extends SquigglyLine {
+  constructor(particle) {
+    super(...linePoints(particle), 'γ');
+  }
+}
+
+class ElectronLine extends Line {
+  constructor(particle) {
+    super(...goingUp(...linePoints(particle)), 'e⁻');
+  }
+}
+
+class PositronLine extends Line {
+  constructor(particle) {
+    super(...goingDown(...linePoints(particle)), 'e⁺');
+  }
 }
 
 export default class extends Controller {
@@ -35,11 +57,10 @@ export default class extends Controller {
 
   createGeometry() {
     this.renderables = allParticles.map(particle => {
-      const linePoints = particle.vertices.map(v => v._displayPoint);
-      if (particle.charge === 0) {
-        return new SquigglyLine(...linePoints, 'γ');
-      } else {
-        return new Line(...linePoints, particle.charge > 0 ? 'e⁺' : 'e⁻');
+      switch (particle.charge) {
+        case 0: return new PhotonLine(particle);
+        case +1: return new PositronLine(particle);
+        case -1: return new ElectronLine(particle);
       }
     });
   }
