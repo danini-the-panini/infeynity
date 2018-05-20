@@ -6,8 +6,8 @@ import diagram2 from '../examples/example2';
 import diagram3 from '../examples/example3';
 import diagram4 from '../examples/example4';
 
-function processVertex(vertex) {
-  const neighbours = vertex.neighbours;
+function centroidifyVertex(vertex) {
+  const neighbours = vertex.getNeighbours();
 
   let x = 0;
   let y = 0;
@@ -19,6 +19,31 @@ function processVertex(vertex) {
   y /= neighbours.length;
 
   vertex._displayPoint = [x, y];
+}
+
+function moveBelow(top, bottom) {
+  top[1] += 0.01 + Math.random() * 0.005;
+  bottom[1] -= 0.01 + Math.random() * 0.005;
+}
+
+function timeLegitimizeVertex(vertex) {
+  const fromNeighbours = vertex.fromNeighbours();
+  const toNeighbours = vertex.toNeighbours();
+  const neighbours = [...fromNeighbours, ...toNeighbours];
+
+  fromNeighbours.forEach(n => {
+    if (n.origin) return;
+    moveBelow(vertex._displayPoint, n._displayPoint);
+  });
+  toNeighbours.forEach(n => {
+    if (n.origin) return;
+    moveBelow(n._displayPoint, vertex._displayPoint);
+  });
+}
+
+function processVertex(vertex) {
+  centroidifyVertex(vertex);
+  timeLegitimizeVertex(vertex);
 }
 
 function linePoints(particle) {
@@ -96,9 +121,10 @@ export default class extends Controller {
   }
 
   processAndRender() {
-    for (let i = 0; i < 20; i++ ) {
-      this.diagram.vertices.forEach(processVertex);
+    for (let i = 0; i < 7; i++ ) {
+      this.diagram.vertices.forEach(centroidifyVertex);
     }
+    this.diagram.vertices.forEach(timeLegitimizeVertex);
 
     this.createGeometry();
     this.render();

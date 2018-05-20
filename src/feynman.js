@@ -17,12 +17,14 @@ export class Particle {
 
   set from(v) {
     if (this.fromVertex) throw new Error(`${this.constructor.name} already has a "from" vertex`);
+    v.outgoing.push(this);
     this.fromVertex = v;
     this.addVertex(v, this.sources);
   }
 
   set to(v) {
     if (this.toVertex) throw new Error(`${this.constructor.name} already has a "to" vertex`);
+    v.incoming.push(this);
     this.toVertex = v;
     this.addVertex(v, this.destinations);
   }
@@ -46,7 +48,7 @@ export class Particle {
     if (vertex.origin) {
       if (this.onShell) throw new Error("Particle cannot be both incoming and outgoing");
       this.onShell = true;
-      this.incoming = vertex.incoming;
+      this.isIncoming = vertex.isIncoming;
     }
   }
 }
@@ -79,14 +81,25 @@ export class Vertex {
   constructor(...particles) {
     this.particles = particles;
 
+    this.incoming = [];
+    this.outgoing = [];
+
     this.fermions = this.particles.filter(p => p.isFermion);
     this.bosons = this.particles.filter(p => !p.isFermion);
   }
 
-  get neighbours() {
-    return this.particles.reduce((a, b) => {
+  getNeighbours(particles = this.particles) {
+    return particles.reduce((a, b) => {
       return [...a, ...b.vertices.filter(v => !a.includes(v) && v !== this)];
     }, []);
+  }
+
+  fromNeighbours() {
+    return this.getNeighbours(this.incoming);
+  }
+
+  toNeighbours() {
+    return this.getNeighbours(this.outgoing);
   }
 
   particleOfNeighbour(vertex) {
@@ -210,9 +223,9 @@ export class AnnihilationVertex extends InnerVertex {
 
 // origin points for on-shell particles
 class OriginVertex extends Vertex {
-  constructor(particle, incoming) {
+  constructor(particle, isIncoming) {
     super(particle);
-    this.incoming = incoming;
+    this.isIncoming = isIncoming;
     this.origin = true;
   }
 }
