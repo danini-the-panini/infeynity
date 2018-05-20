@@ -1,9 +1,10 @@
 import { Controller } from "stimulus"
-import { Line, SquigglyLine, goingUp, goingDown } from '../geometry';
+import { Line, SquigglyLine, swap } from '../geometry';
 
 import diagram1 from '../examples/example1';
 import diagram2 from '../examples/example2';
 import diagram3 from '../examples/example3';
+import diagram4 from '../examples/example4';
 
 function processVertex(vertex) {
   const neighbours = vertex.neighbours;
@@ -32,13 +33,13 @@ class PhotonLine extends SquigglyLine {
 
 class ElectronLine extends Line {
   constructor(particle) {
-    super(...goingUp(...linePoints(particle)), 'e⁻');
+    super(...linePoints(particle), 'e⁻');
   }
 }
 
 class PositronLine extends Line {
   constructor(particle) {
-    super(...goingDown(...linePoints(particle)), 'e⁺');
+    super(...swap(...linePoints(particle)), 'e⁺');
   }
 }
 
@@ -58,22 +59,14 @@ export default class extends Controller {
     return 512;
   }
 
-  generate1() {
-    this.diagram = diagram1;
-    this.generate();
-  }
+  generate1() { this.generate(diagram1); }
+  generate2() { this.generate(diagram2); }
+  generate3() { this.generate(diagram3); }
+  generate4() { this.generate(diagram4); }
 
-  generate2() {
-    this.diagram = diagram2;
-    this.generate();
-  }
+  generate(diagram = this.diagram) {
+    this.diagram = diagram;
 
-  generate3() {
-    this.diagram = diagram3;
-    this.generate();
-  }
-
-  generate() {
     // set anchor points of inputs and outputs (on-shell particles)
     this.diagram.incomingVertices.forEach((v, index) => {
       const lastIndex = this.diagram.incomingVertices.length - 1;

@@ -1,4 +1,4 @@
-import { Electron, Positron, Photon, Vertex, Diagram } from '../feynman';
+import { Electron, Positron, Photon, ElectronEmitVertex, PositronEmitVertex, ElectronAbsorbVertex, PositronAbsorbVertex, Diagram } from '../feynman';
 
 const e1 = new Electron();
 const e2 = new Electron();
@@ -12,12 +12,12 @@ const gv1 = new Photon();
 const gv2 = new Photon();
 const gv3 = new Photon();
 
-const v1 = new Vertex(e1, ev1, gv1);
-const v2 = new Vertex(ev1, ev2, gv2);
-const v3 = new Vertex(ev2, e2, gv3);
-const v4 = new Vertex(p1, gv1, pv1);
-const v5 = new Vertex(pv1, gv2, pv2);
-const v6 = new Vertex(pv2, gv3, p2);
+const v1 = new ElectronEmitVertex(e1, ev1, gv1);
+const v2 = new ElectronEmitVertex(ev1, ev2, gv2);
+const v3 = new ElectronEmitVertex(ev2, e2, gv3);
+const v4 = new PositronAbsorbVertex(p1, gv1, pv1);
+const v5 = new PositronAbsorbVertex(pv1, gv2, pv2);
+const v6 = new PositronAbsorbVertex(pv2, gv3, p2);
 
 const inputs   = [e1, p1];
 const outputs  = [e2, p2];
