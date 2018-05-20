@@ -14,9 +14,9 @@ const v2 = new Vertex(ev1, e2, gv2);
 const v3 = new Vertex(p1, gv1, pv1);
 const v4 = new Vertex(pv1, gv2, p2);
 
-export const inputs = [e1, p1];
-export const outputs = [e2, p2];
-export const virtuals = [ev1, pv1, gv1, gv2];
-export const vertices = [v1, v2, v3, v4];
+const inputs   = [e1, p1];
+const outputs  = [e2, p2];
+const virtuals = [ev1, pv1, gv1, gv2];
+const vertices = [v1, v2, v3, v4];
 
 export default new Diagram(inputs, outputs, virtuals, vertices);

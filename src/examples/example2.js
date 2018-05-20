@@ -9,9 +9,9 @@ const gv = new Photon();
 const v1 = new Vertex(e1, e2, gv);
 const v2 = new Vertex(e3, e4, gv);
 
-export const inputs = [e1, e3];
-export const outputs = [e2, e4];
-export const virtuals = [gv];
-export const vertices = [v1, v2];
+const inputs   = [e1, e3];
+const outputs  = [e2, e4];
+const virtuals = [gv];
+const vertices = [v1, v2];
 
 export default new Diagram(inputs, outputs, virtuals, vertices);
