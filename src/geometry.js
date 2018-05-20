@@ -103,6 +103,7 @@ export class Line {
 
   renderLabel(ctx, s) {
     ctx.font = '16px serif';
+    ctx.textAlign = "center";
     ctx.fillText(this.label, ...scale(add(lerp(this.start, this.end, 0.5), mul(this.uptangent, 16.0 / avg(s))), s));
   }
 }
