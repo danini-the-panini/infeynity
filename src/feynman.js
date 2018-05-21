@@ -4,8 +4,15 @@ function part([a, b], predicate) {
   return Math.random() > 0.5 ? [a, b] : [b, a];
 }
 
+global.id = 0;
+function genId() {
+  return ++global.id;
+}
+
 export class Particle {
   constructor(charge, isFermion) {
+    this.id = genId();
+    this.isParticle   = true;
     this.charge       = charge;
     this.isFermion    = isFermion;
     this.neighbours   = [];
@@ -22,11 +29,19 @@ export class Particle {
     this.addVertex(v, this.sources);
   }
 
+  get from() {
+    return this.fromVertex;
+  }
+
   set to(v) {
     if (this.toVertex) throw new Error(`${this.constructor.name} already has a "to" vertex`);
     v.incoming.push(this);
     this.toVertex = v;
     this.addVertex(v, this.destinations);
+  }
+
+  get to() {
+    return this.toVertex;
   }
 
   get vertices() {
@@ -59,26 +74,11 @@ export class Fermion extends Particle {
   }
 }
 
-export class Electron extends Fermion {
-  constructor() {
-    super(-1);
-  }
-}
-
-export class Positron extends Fermion {
-  constructor() {
-    super(+1);
-  }
-}
-
-export class Photon extends Particle {
-  constructor() {
-    super(0, false);
-  }
-}
-
 export class Vertex {
   constructor(...particles) {
+    this.id = genId();
+    this.isVertex = true;
+
     this.particles = particles;
 
     this.incoming = [];
@@ -230,7 +230,7 @@ class OriginVertex extends Vertex {
   }
 }
 
-class IncomingVertex extends OriginVertex {
+export class IncomingVertex extends OriginVertex {
   constructor(particle) {
     super(particle, true);
 
@@ -238,13 +238,75 @@ class IncomingVertex extends OriginVertex {
   }
 }
 
-class OutgoingVertex extends OriginVertex {
+export class OutgoingVertex extends OriginVertex {
   constructor(particle) {
     super(particle, false);
 
     particle.to = this;
   }
 }
+
+export class Electron extends Fermion {
+  constructor() {
+    super(-1);
+  }
+
+  possibleToVertices() {
+    return [ElectronEmitVertex, ElectronAbsorbVertex, AnnihilationVertex];
+  }
+
+  possibleFromVertices() {
+    return [ElectronEmitVertex, ElectronAbsorbVertex, ProductionVertex];
+  }
+}
+
+export class Positron extends Fermion {
+  constructor() {
+    super(+1);
+  }
+
+  possibleToVertices() {
+    return [PositronEmitVertex, PositronAbsorbVertex, AnnihilationVertex];
+  }
+
+  possibleFromVertices() {
+    return [PositronEmitVertex, PositronAbsorbVertex, ProductionVertex];
+  }
+}
+
+export class Photon extends Particle {
+  constructor() {
+    super(0, false);
+  }
+
+  possibleToVertices() {
+    return [ElectronAbsorbVertex, PositronAbsorbVertex, ProductionVertex];
+  }
+
+  possibleFromVertices() {
+    return [ElectronEmitVertex, PositronEmitVertex, AnnihilationVertex];
+  }
+}
+
+
+ElectronEmitVertex.inputTypes    = [Electron          ];
+ElectronEmitVertex.outputTypes   = [Electron, Photon  ];
+
+PositronEmitVertex.inputTypes    = [Positron          ];
+PositronEmitVertex.outputTypes   = [Positron, Photon  ];
+
+ElectronAbsorbVertex.inputTypes  = [Electron, Photon  ];
+ElectronAbsorbVertex.outputTypes = [Electron          ];
+
+PositronAbsorbVertex.inputTypes  = [Positron, Photon  ];
+PositronAbsorbVertex.outputTypes = [Positron          ];
+
+ProductionVertex.inputTypes      = [Photon            ];
+ProductionVertex.outputTypes     = [Electron, Positron];
+
+AnnihilationVertex.inputTypes    = [Electron, Positron];
+AnnihilationVertex.outputTypes   = [Photon            ];
+
 
 export class Diagram {
   constructor(inputs, outputs, virtuals, vertices) {
@@ -253,8 +315,8 @@ export class Diagram {
     this.virtuals = virtuals;
     this.vertices = vertices;
 
-    this.incomingVertices = this.inputs.map(p => new IncomingVertex(p, true));
-    this.outgoingVertices = this.outputs.map(p => new OutgoingVertex(p, false));
+    this.incomingVertices = this.inputs.map(p => p.from || new IncomingVertex(p, true));
+    this.outgoingVertices = this.outputs.map(p => p.to || new OutgoingVertex(p, false));
 
     this.originVertices   = [...this.incomingVertices, ...this.outgoingVertices];
 

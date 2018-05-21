@@ -1,5 +1,6 @@
 import { Controller } from "stimulus"
 import { Line, SquigglyLine, swap } from '../geometry';
+import Generator from '../generator';
 
 import diagram1 from '../examples/example1';
 import diagram2 from '../examples/example2';
@@ -91,6 +92,16 @@ export default class extends Controller {
   generate4() { this.generate(diagram4); }
   generate5() { this.generate(diagram5); }
 
+  newGenerator() {
+    this.generator = new Generator();
+    this.generateFromGenerator();
+  }
+
+  generateFromGenerator() {
+    if (!this.generator) return;
+    this.generate(this.generator.generate());
+  }
+
   generate(diagram = this.diagram) {
     this.diagram = diagram;
 
@@ -120,6 +131,20 @@ export default class extends Controller {
         case -1: return new ElectronLine(particle);
       }
     });
+  }
+
+  smoothen() {
+    this.diagram.vertices.forEach(centroidifyVertex);
+
+    this.createGeometry();
+    this.render();
+  }
+
+  timeLegitimize() {
+    this.diagram.vertices.forEach(timeLegitimizeVertex);
+
+    this.createGeometry();
+    this.render();
   }
 
   processAndRender() {
