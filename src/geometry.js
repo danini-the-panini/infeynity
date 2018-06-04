@@ -6,14 +6,30 @@ export function add([x1, y1], [x2, y2]) {
   return [x1 + x2, y1 + y2];
 }
 
+// circle inversion functions derived from here: http://mathworld.wolfram.com/Inversion.html
+
 // perform circle inversion
 // p -> the point
-// o -> origin of the circle
-// r -> radius of the circle
+// o -> origin of the inversion circle
+// k -> radius of the inversion circle (inversion radius)
 // returns [x2, y2] -> the inverted point
-export function circleInvert(p, o, r) {
-  const rsq = r*r;
-  return add(o, div(mul(sub(p, o), rsq), distanceSq(p, o)));
+export function circleInvert(p, o, k) {
+  const ksq = k*k;
+  return add(o, div(mul(sub(p, o), ksq), distanceSq(p, o)));
+}
+
+// perform a circle inversion of a circle
+// c -> origin of the circle to be inverted
+// a -> radius of the circle to be inverted
+// o -> origin of the inversion circle
+// k -> radius of the inversion circle (inversion radius)
+// returns [[cx2, cy2], a2] -> the inverted circle's origin and radius
+export function circleInvertCircle(c, a, o, k) {
+  const [x, y] = c;
+  const [ox, oy] = o;
+  const ksq = k ** 2;
+  const s = ksq / ((x - ox)**2 + (y - oy)**2 - a**2);
+  return [add(o, mul(sub(c, o), s)), Math.abs(s) * a];
 }
 
 function mul([x, y], s) {
@@ -25,15 +41,19 @@ function div([x, y], s) {
 }
 
 function distanceSq(a, b) {
-  return vectorLengthSq(sub(a, b))
+  return vectorLengthSq(sub(a, b));
 }
 
+export function distance(a, b) {
+  return vectorLength(sub(a, b));
+}
+ 
 function vectorLengthSq([x, y]) {
   return x * x + y * y
 }
 
-function vectorLength(v) {
-  return Math.sqrt(vectorLengthS(v));
+export function vectorLength(v) {
+  return Math.sqrt(vectorLengthSq(v));
 }
 
 function length([x1, y1], [x2, y2]) {
@@ -168,6 +188,25 @@ export class SquigglyLine extends Line {
     ctx.stroke();
 
     this.renderLabel(ctx, s);
+
+    this.drawn = true;
+  }
+}
+
+export class Circle {
+  constructor(origin, radius) {
+    this.origin = origin;
+    this.radius = radius;
+  }
+
+  render(ctx) {
+    if (this.drawn) return;
+
+    ctx.beginPath();
+    ctx.arc(...this.origin, this.radius, 0, 2 * Math.PI);
+    ctx.moveTo(...this.origin);
+    ctx.lineTo(...add(this.origin, [1, 1]));
+    ctx.stroke();
 
     this.drawn = true;
   }

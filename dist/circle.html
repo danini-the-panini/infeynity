@@ -9,7 +9,10 @@
   <div data-controller="circle">
     <canvas data-target="circle.canvas" width="512" height="512" style="border: 1px dotted #ccc" data-action="mousedown->circle#startDrawing mousemove->circle#movePen mouseup->circle#stopDrawing mouseleave->circle#penGone"></canvas>
     <button data-action="click->circle#clearDrawing">Clear</button>
-    <input type="text" data-target="circle.output" />
+    <button data-action="click->circle#usePenMode">Pen</button>
+    <button data-action="click->circle#useCircleMode">Circle</button>
+    <label>Mode:</label>
+    <input type="text" data-target="circle.mode" value="pen" />
   </div>
 
   <script src="/bundle.js"></script>
