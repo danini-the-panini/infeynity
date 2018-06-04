@@ -1,11 +1,15 @@
 import { Controller } from "stimulus";
-import { add } from '../geometry';
+import { add, circleInvert } from '../geometry';
+
+const RADIUS = 100;
+const CIRCLE_ORIGIN = [256, 256]
 
 export default class extends Controller {
   static targets = ["canvas", "output"];
 
   connect() {
     this.drawingContext = this.canvasTarget.getContext("2d")
+    this.clearDrawing();
   }
 
   get canvasWidth() {
@@ -32,8 +36,13 @@ export default class extends Controller {
 
   makeMark() {
     this.drawingContext.beginPath();
+
     this.drawingContext.moveTo(...this.lastPenLocation);
     this.drawingContext.lineTo(...this.penLocation);
+
+    this.drawingContext.moveTo(...circleInvert(this.lastPenLocation, CIRCLE_ORIGIN, RADIUS));
+    this.drawingContext.lineTo(...circleInvert(this.penLocation, CIRCLE_ORIGIN, RADIUS));
+
     this.drawingContext.stroke();
   }
 
@@ -59,7 +68,17 @@ export default class extends Controller {
     this.unsetPen()
   }
 
+  drawCircle() {
+    this.drawingContext.beginPath();
+    this.drawingContext.arc(...CIRCLE_ORIGIN, RADIUS, 0, 2 * Math.PI);
+    this.drawingContext.moveTo(...CIRCLE_ORIGIN);
+    this.drawingContext.lineTo(...add(CIRCLE_ORIGIN, [1,1]));
+    this.drawingContext.stroke();
+  }
+
   clearDrawing() {
     this.drawingContext.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+    this.drawCircle();
   }
 }

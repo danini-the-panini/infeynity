@@ -2,8 +2,18 @@ function sub([x1, y1], [x2, y2]) {
   return [x1 - x2, y1 - y2];
 }
 
-function add([x1, y1], [x2, y2]) {
+export function add([x1, y1], [x2, y2]) {
   return [x1 + x2, y1 + y2];
+}
+
+// perform circle inversion
+// p -> the point
+// o -> origin of the circle
+// r -> radius of the circle
+// returns [x2, y2] -> the inverted point
+export function circleInvert(p, o, r) {
+  const rsq = r*r;
+  return add(o, div(mul(sub(p, o), rsq), distanceSq(p, o)));
 }
 
 function mul([x, y], s) {
@@ -14,8 +24,16 @@ function div([x, y], s) {
   return [x / s, y / s];
 }
 
-function vectorLength([x, y]) {
-  return Math.sqrt(x * x + y * y);
+function distanceSq(a, b) {
+  return vectorLengthSq(sub(a, b))
+}
+
+function vectorLengthSq([x, y]) {
+  return x * x + y * y
+}
+
+function vectorLength(v) {
+  return Math.sqrt(vectorLengthS(v));
 }
 
 function length([x1, y1], [x2, y2]) {
